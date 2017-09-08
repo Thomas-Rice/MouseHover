@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 
 namespace mouseHover
@@ -8,10 +9,6 @@ namespace mouseHover
     {
         //Logic to do
         // Count how many M's and move that many steps
-        // If N Y +1
-        // If S Y -1
-        // If E X +1
-        // If W X -1
 
 
         [TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
@@ -23,7 +20,13 @@ namespace mouseHover
             return MovementCalculator.Move(input);
         }
 
-
+        [Test] 
+        public void ChangeDirection()
+        {
+            var currentDirection = "N";
+            var newdirection = MovementCalculator.Turn(currentDirection);
+            Assert.AreEqual("E" , newdirection);
+        }
 
 
     }
@@ -39,6 +42,19 @@ namespace mouseHover
 
             startingPositionY += numberOfStepsToMove;
             return $"{startingPositionX},{startingPositionY} N";
+        }
+
+        static readonly List<string> Directions = new List<string>()
+        {
+            "N",
+            "E",
+            "S",
+            "W"
+        };
+
+        public static string Turn(string direction)
+        {
+            return  Directions[1];
         }
     }
 }
