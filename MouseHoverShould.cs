@@ -70,13 +70,8 @@ namespace mouseHover
 
         public static string Turn(string direction)
         {
-            if(direction == "N")
-                return  Directions[1];
-            if (direction == "E")
-                return Directions[2];
-            if (direction == "S")
-                return Directions[3];
-            throw new NotImplementedException();
+            var indexOfNewDirection = Directions.IndexOf(direction) + 1;
+            return Directions[indexOfNewDirection];
         }
     }
 }
