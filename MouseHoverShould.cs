@@ -37,6 +37,13 @@ namespace mouseHover
             Assert.AreEqual("S" , newdirection);
         }
 
+        [Test]
+        public void ChangeDirectionClockwiseFromSouth()
+        {
+            var currentDirection = "S";
+            var newdirection = MovementCalculator.Turn(currentDirection);
+            Assert.AreEqual("W", newdirection);
+        }
 
     }
 
@@ -67,7 +74,9 @@ namespace mouseHover
                 return  Directions[1];
             if (direction == "E")
                 return Directions[2];
-            throw new NotFiniteNumberException();
+            if (direction == "S")
+                return Directions[3];
+            throw new NotImplementedException();
         }
     }
 }
