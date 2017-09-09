@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 
@@ -21,11 +22,19 @@ namespace mouseHover
         }
 
         [Test] 
-        public void ChangeDirection()
+        public void ChangeDirectionClockwise()
         {
             var currentDirection = "N";
             var newdirection = MovementCalculator.Turn(currentDirection);
             Assert.AreEqual("E" , newdirection);
+        }
+
+        [Test] 
+        public void ChangeDirectionClockwiseFromEast()
+        {
+            var currentDirection = "E";
+            var newdirection = MovementCalculator.Turn(currentDirection);
+            Assert.AreEqual("S" , newdirection);
         }
 
 
@@ -54,7 +63,11 @@ namespace mouseHover
 
         public static string Turn(string direction)
         {
-            return  Directions[1];
+            if(direction == "N")
+                return  Directions[1];
+            if (direction == "E")
+                return Directions[2];
+            throw new NotFiniteNumberException();
         }
     }
 }
