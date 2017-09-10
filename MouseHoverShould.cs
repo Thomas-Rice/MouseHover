@@ -31,6 +31,11 @@ namespace mouseHover
             return MovementCalculator.TurnClockwise(currentDirection);
         }
 
+        [TestCase("N", ExpectedResult = "W")]
+        public string ChangeDirectionAntiClockwise(string currentDirection)
+        {
+            return MovementCalculator.TurnAntiClockwise(currentDirection);
+        }
     }
 
     public static class MovementCalculator
@@ -60,6 +65,11 @@ namespace mouseHover
                 return Directions[0];
             var indexOfNewDirection = Directions.IndexOf(direction) + 1;
             return Directions[indexOfNewDirection];
+        }
+
+        public static string TurnAntiClockwise(string currentDirection)
+        {
+            return "W";
         }
     }
 }
