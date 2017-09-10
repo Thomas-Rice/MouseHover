@@ -25,6 +25,7 @@ namespace mouseHover
         [TestCase("N", ExpectedResult = "E")]
         [TestCase("E", ExpectedResult = "S")]
         [TestCase("S", ExpectedResult = "W")]
+        [TestCase("W", ExpectedResult = "N")]
         public string ChangeDirectionClockwise(string currentDirection)
         {
             return MovementCalculator.Turn(currentDirection);
@@ -55,6 +56,8 @@ namespace mouseHover
 
         public static string Turn(string direction)
         {
+            if(direction == "W")
+                return Directions[0];
             var indexOfNewDirection = Directions.IndexOf(direction) + 1;
             return Directions[indexOfNewDirection];
         }
