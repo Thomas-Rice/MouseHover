@@ -21,28 +21,13 @@ namespace mouseHover
             return MovementCalculator.Move(input);
         }
 
-        [Test] 
-        public void ChangeDirectionClockwise()
-        {
-            var currentDirection = "N";
-            var newdirection = MovementCalculator.Turn(currentDirection);
-            Assert.AreEqual("E" , newdirection);
-        }
 
-        [Test] 
-        public void ChangeDirectionClockwiseFromEast()
+        [TestCase("N", ExpectedResult = "E")]
+        [TestCase("E", ExpectedResult = "S")]
+        [TestCase("S", ExpectedResult = "W")]
+        public string ChangeDirectionClockwise(string currentDirection)
         {
-            var currentDirection = "E";
-            var newdirection = MovementCalculator.Turn(currentDirection);
-            Assert.AreEqual("S" , newdirection);
-        }
-
-        [Test]
-        public void ChangeDirectionClockwiseFromSouth()
-        {
-            var currentDirection = "S";
-            var newdirection = MovementCalculator.Turn(currentDirection);
-            Assert.AreEqual("W", newdirection);
+            return MovementCalculator.Turn(currentDirection);
         }
 
     }
