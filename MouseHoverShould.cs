@@ -32,6 +32,7 @@ namespace mouseHover
         }
 
         [TestCase("N", ExpectedResult = "W")]
+        [TestCase("E", ExpectedResult = "N")]
         public string ChangeDirectionAntiClockwise(string currentDirection)
         {
             return MovementCalculator.TurnAntiClockwise(currentDirection);
@@ -69,7 +70,11 @@ namespace mouseHover
 
         public static string TurnAntiClockwise(string currentDirection)
         {
-            return "W";
+            if(currentDirection == "N")
+                return "W";
+            if (currentDirection == "E")
+                return "N";
+            throw new NotImplementedException();
         }
     }
 }
