@@ -28,7 +28,7 @@ namespace mouseHover
         [TestCase("W", ExpectedResult = "N")]
         public string ChangeDirectionClockwise(string currentDirection)
         {
-            return MovementCalculator.Turn(currentDirection);
+            return MovementCalculator.TurnClockwise(currentDirection);
         }
 
     }
@@ -54,7 +54,7 @@ namespace mouseHover
             "W"
         };
 
-        public static string Turn(string direction)
+        public static string TurnClockwise(string direction)
         {
             if(direction == "W")
                 return Directions[0];
