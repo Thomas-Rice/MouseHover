@@ -39,14 +39,24 @@ namespace mouseHover
         {
             return MovementCalculator.TurnAntiClockwise(currentDirection);
         }
+
+        [Test]
+        public void MoveTurnMove()
+        {
+            List<String> commandList = new List<string>() { "MMM", "E", "MM" };
+            var result = MovementCalculator.Parse("1,1 N; MMMEMM");
+            Assert.AreEqual(commandList[0], result[0]);
+            Assert.AreEqual(commandList[1], result[1]);
+            Assert.AreEqual(commandList[2], result[2]);
+        }
     }
 
     public static class MovementCalculator
     {
         public static string Move(string input)
         {
-            var startingPositionX = (int)char.GetNumericValue(input[0]);
-            var startingPositionY = (int)char.GetNumericValue(input[2]);
+            var startingPositionX = (int) char.GetNumericValue(input[0]);
+            var startingPositionY = (int) char.GetNumericValue(input[2]);
             var indexOfFirstMovementCommand = input.IndexOf('M');
             var numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
 
@@ -64,7 +74,7 @@ namespace mouseHover
 
         public static string TurnClockwise(string currentDirection)
         {
-            if(currentDirection == "W")
+            if (currentDirection == "W")
                 return Directions[0];
             var indexOfNewDirection = Directions.IndexOf(currentDirection) + 1;
             return Directions[indexOfNewDirection];
@@ -76,6 +86,37 @@ namespace mouseHover
                 return Directions[3];
             var indexOfNewDirection = Directions.IndexOf(currentDirection) - 1;
             return Directions[indexOfNewDirection];
+        }
+
+        public static List<string> Parse(string input)
+        {
+            List<String> commandList = new List<string>();
+            string movementstring = "";
+            var indexOfFirstMovementCommand = input.IndexOf('M');
+            var movementCommands = (input.Substring(indexOfFirstMovementCommand));
+
+            foreach (char command in movementCommands)
+            {
+                if (command == 'M')
+                    movementstring += 'M';
+
+                else
+                {
+                    commandList.Add(movementstring);
+                    movementstring = "";
+                    if (command == 'N')
+                        commandList.Add(command.ToString());
+                    if (command == 'E')
+                        commandList.Add(command.ToString());
+                    if (command == 'S')
+                        commandList.Add(command.ToString());
+                    if (command == 'W')
+                        commandList.Add(command.ToString());
+                }
+
+            }
+            commandList.Add(movementstring);
+            return commandList;
         }
     }
 }
