@@ -10,6 +10,7 @@ namespace mouseHover
     {
         //Logic to do
         // Count how many M's and move that many steps
+        // Move in X if W or E
 
 
         [TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
@@ -40,14 +41,35 @@ namespace mouseHover
             return MovementCalculator.TurnAntiClockwise(currentDirection);
         }
 
+        //Can I test case with an array as expected output?
         [Test]
-        public void MoveTurnMove()
+        public void ParseMovementString()
         {
             List<String> commandList = new List<string>() { "MMM", "E", "MM" };
-            var result = MovementCalculator.Parse("1,1 N; MMMEMM");
+            var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMM");
             Assert.AreEqual(commandList[0], result[0]);
             Assert.AreEqual(commandList[1], result[1]);
             Assert.AreEqual(commandList[2], result[2]);
+        }
+
+        [Test]
+        public void ParseMovementString2()
+        {
+            List<String> commandList = new List<string>() { "MMM", "E", "MM", "W", "MMMMMMM", "N" };
+            var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMMWMMMMMMMN");
+            Assert.AreEqual(commandList[0], result[0]);
+            Assert.AreEqual(commandList[1], result[1]);
+            Assert.AreEqual(commandList[2], result[2]);
+            Assert.AreEqual(commandList[3], result[3]);
+            Assert.AreEqual(commandList[4], result[4]);
+            Assert.AreEqual(commandList[5], result[5]);
+        }
+
+        [Test]
+        public void ParseOriginalPosition()
+        {
+            var originalPosition = MovementCalculator.ParseOriginalPosition("1,1 N; MMMEMM");
+            Assert.AreEqual("1,1 N", originalPosition);
         }
     }
 
@@ -88,7 +110,7 @@ namespace mouseHover
             return Directions[indexOfNewDirection];
         }
 
-        public static List<string> Parse(string input)
+        public static List<string> ParseMovementString(string input)
         {
             List<String> commandList = new List<string>();
             string movementstring = "";
@@ -117,6 +139,13 @@ namespace mouseHover
             }
             commandList.Add(movementstring);
             return commandList;
+        }
+
+        public static string ParseOriginalPosition(string input)
+        {
+            var splitCommands = input.Split(';');
+            return splitCommands[0];
+
         }
     }
 }
