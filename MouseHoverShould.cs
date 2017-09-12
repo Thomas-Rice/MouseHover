@@ -13,11 +13,11 @@ namespace mouseHover
         // Move in X if W or E
 
 
-        [TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
-        [TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
-        [TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
-        [TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
-        [TestCase("1,1 W; MMM", ExpectedResult = "4,1 W")]
+        //[TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
+        //[TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
+        //[TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
+        //[TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
+        [TestCase("1,1 E; MMM", ExpectedResult = "4,1 E")]
         public string MoveForwardStep(string input)
         {
             return MovementCalculator.Move(input);
@@ -46,17 +46,18 @@ namespace mouseHover
         [Test]
         public void ParseMovementString()
         {
-            List<String> commandList = new List<string>() { "MMM", "E", "MM" };
+            List<String> commandList = new List<string>() { "1,1 N", "MMM", "E", "MM" };
             var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMM");
             Assert.AreEqual(commandList[0], result[0]);
             Assert.AreEqual(commandList[1], result[1]);
             Assert.AreEqual(commandList[2], result[2]);
+            Assert.AreEqual(commandList[3], result[3]);
         }
 
         [Test]
         public void ParseMovementString2()
         {
-            List<String> commandList = new List<string>() { "MMM", "E", "MM", "W", "MMMMMMM", "N" };
+            List<String> commandList = new List<string>() { "1,1 N", "MMM", "E", "MM", "W", "MMMMMMM", "N" };
             var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMMWMMMMMMMN");
             Assert.AreEqual(commandList[0], result[0]);
             Assert.AreEqual(commandList[1], result[1]);
@@ -80,6 +81,13 @@ namespace mouseHover
             Assert.AreEqual("2,1 N", originalPosition);
         }
 
+        [Test]
+        public void ParseOriginalPositionFromDifferentOriginAgain()
+        {
+            var originalPosition = MovementCalculator.ParseOriginalPosition("20,10 N; MMMEMM");
+            Assert.AreEqual("20,10 N", originalPosition);
+        }
+
     }
 
     public static class MovementCalculator
@@ -88,11 +96,26 @@ namespace mouseHover
         {
             var startingPositionX = (int) char.GetNumericValue(input[0]);
             var startingPositionY = (int) char.GetNumericValue(input[2]);
-            var indexOfFirstMovementCommand = input.IndexOf('M');
-            var numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
 
-            startingPositionY += numberOfStepsToMove;
-            return $"{startingPositionX},{startingPositionY} N";
+            var numberOfStepsToMove = 0;
+            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
+            var direction = 'N';
+
+            if(input[indexOfFirstMovementCommand] == 'M')
+                numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
+
+
+            if (input[4] == 'E')
+            {
+                direction = 'E';
+                startingPositionX += numberOfStepsToMove;
+
+            }
+            if (input[4] == 'N')
+                startingPositionY += numberOfStepsToMove;
+
+
+            return $"{startingPositionX},{startingPositionY} {direction}";
         }
 
         static readonly List<string> Directions = new List<string>()
@@ -123,6 +146,8 @@ namespace mouseHover
         {
             List<String> commandList = new List<string>();
             string movementstring = "";
+
+            commandList.Add(ParseOriginalPosition(input));
             var indexOfFirstMovementCommand = input.IndexOf('M');
             var movementCommands = (input.Substring(indexOfFirstMovementCommand));
 
