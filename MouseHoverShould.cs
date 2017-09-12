@@ -18,6 +18,7 @@ namespace mouseHover
         [TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
         [TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
         [TestCase("1,1 E; MMM", ExpectedResult = "4,1 E")]
+        //[TestCase("1,1 W; MMM", ExpectedResult = "-4,1 W")]
         public string MoveForwardStep(string input)
         {
             return MovementCalculator.Move(input);
@@ -94,8 +95,8 @@ namespace mouseHover
     {
         public static string Move(string input)
         {
-            var startingPositionX = (int) char.GetNumericValue(input[0]);
-            var startingPositionY = (int) char.GetNumericValue(input[2]);
+            var startingPositionX = Int32.Parse(input.Split(',')[0]);
+            var startingPositionY = Int32.Parse(input.Split(',' , ' ')[1]);
 
             var numberOfStepsToMove = 0;
             var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
@@ -109,6 +110,12 @@ namespace mouseHover
             {
                 direction = 'E';
                 startingPositionX += numberOfStepsToMove;
+
+            }
+            if (input[4] == 'W')
+            {
+                direction = 'W';
+                //startingPositionX -= numberOfStepsToMove;
 
             }
             if (input[4] == 'N')
