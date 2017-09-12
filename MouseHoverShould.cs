@@ -17,6 +17,7 @@ namespace mouseHover
         [TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
         [TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
         [TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
+        [TestCase("1,1 W; MMM", ExpectedResult = "4,1 W")]
         public string MoveForwardStep(string input)
         {
             return MovementCalculator.Move(input);
@@ -71,6 +72,14 @@ namespace mouseHover
             var originalPosition = MovementCalculator.ParseOriginalPosition("1,1 N; MMMEMM");
             Assert.AreEqual("1,1 N", originalPosition);
         }
+
+        [Test]
+        public void ParseOriginalPositionFromDifferentOrigin()
+        {
+            var originalPosition = MovementCalculator.ParseOriginalPosition("2,1 N; MMMEMM");
+            Assert.AreEqual("2,1 N", originalPosition);
+        }
+
     }
 
     public static class MovementCalculator
