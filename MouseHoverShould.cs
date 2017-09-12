@@ -13,10 +13,10 @@ namespace mouseHover
         // Move in X if W or E
 
 
-        //[TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
-        //[TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
-        //[TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
-        //[TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
+        [TestCase("0,0 N; M", ExpectedResult = "0,1 N")]
+        [TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
+        [TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
+        [TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
         [TestCase("1,1 E; MMM", ExpectedResult = "4,1 E")]
         public string MoveForwardStep(string input)
         {
