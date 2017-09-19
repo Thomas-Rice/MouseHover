@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 
@@ -55,6 +56,7 @@ namespace mouseHover
         public string OriginalDirection { get; set; }
         public string DirectionToTurn { get; set; }
         public string FinalDirection { get; set; } = "N";
+        public int StepsToMove { get; set; }
 
         static readonly List<string> Directions = new List<string>()
         {
@@ -64,23 +66,18 @@ namespace mouseHover
             "W"
         };
 
-        public Turn(string originalDirection, string directionToTurn)
+        public Turn(string originalDirection, int stepsToMove)
         {
             OriginalDirection = originalDirection;
-            DirectionToTurn = directionToTurn;
+            StepsToMove = stepsToMove;
         }
 
         public string CalculateDirectionToTurn()
         {
-            if (DirectionToTurn.Contains("R"))
-                FinalDirection = "E";
-            if (DirectionToTurn.Contains("RR"))
-                FinalDirection = "S";
-            if (DirectionToTurn.Contains("RRR"))
-                FinalDirection = "W";
-            if (DirectionToTurn.Contains("RRRR"))
-                FinalDirection = "N";
-            return FinalDirection;
+            if (StepsToMove > 3)
+                StepsToMove = StepsToMove % 4;
+            var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
+            return Directions[indexOfNewDirection];
         }
 
     }
@@ -93,10 +90,13 @@ namespace mouseHover
         public static string Move(string input)
         {
             var startingPosition = StartingPosition(input);
+            var numberOfStepsToMove = NumberOfStepsToMove(input);
+            var numberOfStepsToTurn = NumberOfStepsToTurn(input);
+            var startingDirection = StartingDirection(input);
 
-            startingPosition.Y += NumberOfStepsToMove(input);
-
-            var finalDirection = new Turn("N", input).CalculateDirectionToTurn();
+            startingPosition.Y += numberOfStepsToMove;
+            //steps to move and directions to turn need to be separate
+            var finalDirection = new Turn(startingDirection, numberOfStepsToTurn).CalculateDirectionToTurn();
 
             return $"{startingPosition.X},{startingPosition.Y} {finalDirection}";
         }
@@ -110,6 +110,14 @@ namespace mouseHover
                 numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
             return numberOfStepsToMove;
         }
+        private static int NumberOfStepsToTurn(string input)
+        {
+            var numberOfStepsToTurn = 0;
+            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
+            if (input[indexOfFirstMovementCommand] == 'R')
+                numberOfStepsToTurn = (input.Substring(indexOfFirstMovementCommand)).Length;
+            return numberOfStepsToTurn;
+        }
 
         private static Position StartingPosition(string input)
         {
@@ -118,64 +126,16 @@ namespace mouseHover
             return new Position(x, y);
         }
 
-
-        static readonly List<string> Directions = new List<string>()
+        private static string StartingDirection(string input)
         {
-            "N",
-            "E",
-            "S",
-            "W"
-        };
-
-
-
-
-        public static string TurnAntiClockwise(string currentDirection)
-        {
-            if (currentDirection == "N")
-                return Directions[3];
-            var indexOfNewDirection = Directions.IndexOf(currentDirection) - 1;
-            return Directions[indexOfNewDirection];
+            return input.Split(' ', ';')[1];
         }
 
-        public static List<string> ParseMovementString(string input)
-        {
-            List<String> commandList = new List<string>();
-            string movementstring = "";
 
-            commandList.Add(ParseOriginalPosition(input));
-            var indexOfFirstMovementCommand = input.IndexOf('M');
-            var movementCommands = (input.Substring(indexOfFirstMovementCommand));
-
-            foreach (char command in movementCommands)
-            {
-                if (command == 'M')
-                    movementstring += 'M';
-
-                else
-                {
-                    commandList.Add(movementstring);
-                    movementstring = "";
-                    if (command == 'N')
-                        commandList.Add(command.ToString());
-                    if (command == 'E')
-                        commandList.Add(command.ToString());
-                    if (command == 'S')
-                        commandList.Add(command.ToString());
-                    if (command == 'W')
-                        commandList.Add(command.ToString());
-                }
-
-            }
-            commandList.Add(movementstring);
-            return commandList;
-        }
-
-        public static string ParseOriginalPosition(string input)
-        {
-            var splitCommands = input.Split(';');
-            return splitCommands[0];
-
-        }
     }
+
+
+
+
+
 }
