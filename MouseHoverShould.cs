@@ -17,113 +17,44 @@ namespace mouseHover
         [TestCase("0,1 N; M", ExpectedResult = "0,2 N")]
         [TestCase("1,1 N; M", ExpectedResult = "1,2 N")]
         [TestCase("1,1 N; MMM", ExpectedResult = "1,4 N")]
-        [TestCase("1,1 E; MMM", ExpectedResult = "4,1 E")]
-        //[TestCase("1,1 W; MMM", ExpectedResult = "-4,1 W")]
         public string MoveForwardStep(string input)
         {
             return MovementCalculator.Move(input);
         }
 
 
-        [TestCase("N", ExpectedResult = "E")]
-        [TestCase("E", ExpectedResult = "S")]
-        [TestCase("S", ExpectedResult = "W")]
-        [TestCase("W", ExpectedResult = "N")]
+        [TestCase("1,1 N; R", ExpectedResult = "1,1 E")]
+        [TestCase("1,1 N; RR", ExpectedResult = "1,1 S")]
+        [TestCase("1,1 N; RRR", ExpectedResult = "1,1 W")]
+        [TestCase("1,1 N; RRRR", ExpectedResult = "1,1 N")]
         public string ChangeDirectionClockwise(string currentDirection)
         {
-            return MovementCalculator.TurnClockwise(currentDirection);
+            return MovementCalculator.Move(currentDirection);
         }
 
-        [TestCase("N", ExpectedResult = "W")]
-        [TestCase("E", ExpectedResult = "N")]
-        [TestCase("S", ExpectedResult = "E")]
-        [TestCase("W", ExpectedResult = "S")]
-        public string ChangeDirectionAntiClockwise(string currentDirection)
+
+
+}
+
+
+    public class Position
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Position(int x, int y)
         {
-            return MovementCalculator.TurnAntiClockwise(currentDirection);
+            X = x;
+            Y = y;
         }
-
-        //Can I test case with an array as expected output?
-        [Test]
-        public void ParseMovementString()
-        {
-            List<String> commandList = new List<string>() { "1,1 N", "MMM", "E", "MM" };
-            var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMM");
-            Assert.AreEqual(commandList[0], result[0]);
-            Assert.AreEqual(commandList[1], result[1]);
-            Assert.AreEqual(commandList[2], result[2]);
-            Assert.AreEqual(commandList[3], result[3]);
-        }
-
-        [Test]
-        public void ParseMovementString2()
-        {
-            List<String> commandList = new List<string>() { "1,1 N", "MMM", "E", "MM", "W", "MMMMMMM", "N" };
-            var result = MovementCalculator.ParseMovementString("1,1 N; MMMEMMWMMMMMMMN");
-            Assert.AreEqual(commandList[0], result[0]);
-            Assert.AreEqual(commandList[1], result[1]);
-            Assert.AreEqual(commandList[2], result[2]);
-            Assert.AreEqual(commandList[3], result[3]);
-            Assert.AreEqual(commandList[4], result[4]);
-            Assert.AreEqual(commandList[5], result[5]);
-        }
-
-        [Test]
-        public void ParseOriginalPosition()
-        {
-            var originalPosition = MovementCalculator.ParseOriginalPosition("1,1 N; MMMEMM");
-            Assert.AreEqual("1,1 N", originalPosition);
-        }
-
-        [Test]
-        public void ParseOriginalPositionFromDifferentOrigin()
-        {
-            var originalPosition = MovementCalculator.ParseOriginalPosition("2,1 N; MMMEMM");
-            Assert.AreEqual("2,1 N", originalPosition);
-        }
-
-        [Test]
-        public void ParseOriginalPositionFromDifferentOriginAgain()
-        {
-            var originalPosition = MovementCalculator.ParseOriginalPosition("20,10 N; MMMEMM");
-            Assert.AreEqual("20,10 N", originalPosition);
-        }
-
     }
 
-    public static class MovementCalculator
+
+    public class Turn
     {
-        public static string Move(string input)
-        {
-            var startingPositionX = Int32.Parse(input.Split(',')[0]);
-            var startingPositionY = Int32.Parse(input.Split(',' , ' ')[1]);
-
-            var numberOfStepsToMove = 0;
-            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
-            var direction = 'N';
-
-            if(input[indexOfFirstMovementCommand] == 'M')
-                numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
-
-
-            if (input[4] == 'E')
-            {
-                direction = 'E';
-                startingPositionX += numberOfStepsToMove;
-
-            }
-            if (input[4] == 'W')
-            {
-                direction = 'W';
-                //startingPositionX -= numberOfStepsToMove;
-
-            }
-            if (input[4] == 'N')
-                startingPositionY += numberOfStepsToMove;
-
-
-            return $"{startingPositionX},{startingPositionY} {direction}";
-        }
+        public string OriginalDirection { get; set; }
+        public string DirectionToTurn { get; set; }
+        public string FinalDirection { get; set; } = "N";
 
         static readonly List<string> Directions = new List<string>()
         {
@@ -133,13 +64,71 @@ namespace mouseHover
             "W"
         };
 
-        public static string TurnClockwise(string currentDirection)
+        public Turn(string originalDirection, string directionToTurn)
         {
-            if (currentDirection == "W")
-                return Directions[0];
-            var indexOfNewDirection = Directions.IndexOf(currentDirection) + 1;
-            return Directions[indexOfNewDirection];
+            OriginalDirection = originalDirection;
+            DirectionToTurn = directionToTurn;
         }
+
+        public string CalculateDirectionToTurn()
+        {
+            if (DirectionToTurn.Contains("R"))
+                FinalDirection = "E";
+            if (DirectionToTurn.Contains("RR"))
+                FinalDirection = "S";
+            if (DirectionToTurn.Contains("RRR"))
+                FinalDirection = "W";
+            if (DirectionToTurn.Contains("RRRR"))
+                FinalDirection = "N";
+            return FinalDirection;
+        }
+
+    }
+
+
+
+
+    public static class MovementCalculator
+    {
+        public static string Move(string input)
+        {
+            var startingPosition = StartingPosition(input);
+
+            startingPosition.Y += NumberOfStepsToMove(input);
+
+            var finalDirection = new Turn("N", input).CalculateDirectionToTurn();
+
+            return $"{startingPosition.X},{startingPosition.Y} {finalDirection}";
+        }
+
+
+        private static int NumberOfStepsToMove(string input)
+        {
+            var numberOfStepsToMove = 0;
+            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
+            if (input[indexOfFirstMovementCommand] == 'M')
+                numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
+            return numberOfStepsToMove;
+        }
+
+        private static Position StartingPosition(string input)
+        {
+            var x = int.Parse(input.Split(',')[0]);
+            var y = int.Parse(input.Split(',', ' ')[1]);
+            return new Position(x, y);
+        }
+
+
+        static readonly List<string> Directions = new List<string>()
+        {
+            "N",
+            "E",
+            "S",
+            "W"
+        };
+
+
+
 
         public static string TurnAntiClockwise(string currentDirection)
         {

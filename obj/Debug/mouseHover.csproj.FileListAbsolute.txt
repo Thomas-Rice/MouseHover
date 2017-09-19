@@ -5,10 +5,5 @@ C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\att_training\mouseHov
 C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\att_training\mouseHover\obj\Debug\mouseHover.csprojResolveAssemblyReference.cache
 C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\att_training\mouseHover\obj\Debug\mouseHover.dll
 C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\att_training\mouseHover\obj\Debug\mouseHover.pdb
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\bin\Debug\mouseHover.dll
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\bin\Debug\mouseHover.pdb
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\bin\Debug\nunit.framework.dll
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\bin\Debug\nunit.framework.xml
 C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\obj\Debug\mouseHover.csprojResolveAssemblyReference.cache
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\obj\Debug\mouseHover.dll
-C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\obj\Debug\mouseHover.pdb
+C:\Users\thomas.rice\Documents\Visual Studio 2017\Projects\mouseHover\obj\Debug\mouseHover.csproj.CoreCompileInputs.cache
