@@ -36,6 +36,7 @@ namespace mouseHover
 
         [TestCase("1,1 N; L", ExpectedResult = "1,1 W")]
         [TestCase("1,1 N; LL", ExpectedResult = "1,1 S")]
+        [TestCase("1,1 N; LLL", ExpectedResult = "1,1 E")]
         public string ChangeDirectionAntiClockwise(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
@@ -84,6 +85,8 @@ namespace mouseHover
                 StepsToMove = 3;
             if (StepsToMove == -2)
                 StepsToMove = 2;
+            if (StepsToMove == -3)
+                StepsToMove = 1;
             if (StepsToMove > 3)
                 StepsToMove = StepsToMove % 4;
             var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
