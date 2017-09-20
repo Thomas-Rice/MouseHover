@@ -37,11 +37,17 @@ namespace mouseHover
         [TestCase("1,1 N; L", ExpectedResult = "1,1 W")]
         [TestCase("1,1 N; LL", ExpectedResult = "1,1 S")]
         [TestCase("1,1 N; LLL", ExpectedResult = "1,1 E")]
+        [TestCase("1,1 N; LLLL", ExpectedResult = "1,1 N")]
+        [TestCase("1,1 N; LLLLL", ExpectedResult = "1,1 W")]
         public string ChangeDirectionAntiClockwise(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
         }
 
+        public string MoveTurnMove(string currentDirection)
+        {
+            return MovementCalculator.Move(currentDirection);
+        }
 
     }
 
@@ -73,6 +79,14 @@ namespace mouseHover
             "W"
         };
 
+        static readonly List<string> ReversedDirections = new List<string>()
+        {
+            "W",
+            "S",
+            "E",
+            "N"
+        };
+
         public Turn(string originalDirection, int stepsToMove)
         {
             OriginalDirection = originalDirection;
@@ -81,18 +95,40 @@ namespace mouseHover
 
         public string CalculateDirectionToTurn()
         {
-            if (StepsToMove == -1)
-                StepsToMove = 3;
-            if (StepsToMove == -2)
-                StepsToMove = 2;
-            if (StepsToMove == -3)
-                StepsToMove = 1;
-            if (StepsToMove > 3)
-                StepsToMove = StepsToMove % 4;
+            if (StepsToMove <= -1)
+            {
+                return CalculateAntiClockwiseDirection();
+            }
+            return CalculateClockwiseDirection();
+        }
+
+        private string CalculateClockwiseDirection()
+        {
+            StepsToMove = CalculateIndexToUse(StepsToMove);
             var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
             return Directions[indexOfNewDirection];
         }
 
+        private string CalculateAntiClockwiseDirection()
+        {
+            StepsToMove = CalculateStepsToMoveForAntiClockwise();
+            var indexOfNewDirection = ReversedDirections.IndexOf(OriginalDirection) + StepsToMove;
+            indexOfNewDirection = CalculateIndexToUse(indexOfNewDirection);
+            return ReversedDirections[indexOfNewDirection];
+        }
+
+        private int CalculateStepsToMoveForAntiClockwise()
+        {
+            StepsToMove = Math.Abs(StepsToMove);
+            return CalculateIndexToUse(StepsToMove);
+        }
+
+        private int CalculateIndexToUse(int value)
+        {
+            if (value > 3)
+                value = (value % 4);
+            return value;
+        }
     }
 
 
