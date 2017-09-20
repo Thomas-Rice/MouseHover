@@ -35,6 +35,7 @@ namespace mouseHover
         }
 
         [TestCase("1,1 N; L", ExpectedResult = "1,1 W")]
+        [TestCase("1,1 N; LL", ExpectedResult = "1,1 S")]
         public string ChangeDirectionAntiClockwise(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
@@ -79,8 +80,10 @@ namespace mouseHover
 
         public string CalculateDirectionToTurn()
         {
-            if (StepsToMove < 0)
+            if (StepsToMove == -1)
                 StepsToMove = 3;
+            if (StepsToMove == -2)
+                StepsToMove = 2;
             if (StepsToMove > 3)
                 StepsToMove = StepsToMove % 4;
             var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
@@ -124,7 +127,7 @@ namespace mouseHover
             if (input[indexOfFirstMovementCommand] == 'R')
                 numberOfStepsToTurn = (input.Substring(indexOfFirstMovementCommand)).Length;
             if (input[indexOfFirstMovementCommand] == 'L')
-                numberOfStepsToTurn = -1;
+                numberOfStepsToTurn = ((input.Substring(indexOfFirstMovementCommand)).Length) * -1;
             return numberOfStepsToTurn;
         }
 
