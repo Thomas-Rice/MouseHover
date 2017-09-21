@@ -78,11 +78,13 @@ namespace mouseHover
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public string Direction { get; set; }
 
-        public Position(int x, int y)
+        public Position(int x, int y, string direction)
         {
             X = x;
             Y = y;
+            Direction = direction;
         }
     }
 
@@ -142,7 +144,7 @@ namespace mouseHover
             return CalculateIndexToUse(StepsToMove);
         }
 
-        private int CalculateIndexToUse(int value)
+        private static int CalculateIndexToUse(int value)
         {
             if (value > 3)
                 value = (value % 4);
@@ -157,15 +159,21 @@ namespace mouseHover
     {
         public static string Move(string input)
         {
-            var startingPosition = StartingPosition(input);
+            var position = StartingPosition(input);
             var movementArray = CreateMovementArray(input);
-            var startingDirection = StartingDirection(input);
+
+            var finalPosition = CalculateFinalPositionAndDirectionFromArray(position, movementArray);
+
+            return $"{finalPosition.X},{finalPosition.Y} {finalPosition.Direction}";
+        }
 
 
-            int numberOfStepsToMove = 0;
-            int numberOfStepsToTurn = 0;
+        private static Position CalculateFinalPositionAndDirectionFromArray(Position position, List<string> movementArray)
+        {
+            var numberOfStepsToMove = 0;
+            var numberOfStepsToTurn = 0;
             var lastDirection = "";
-            var finalDirection = startingDirection;
+            var finalDirection = position.Direction;
             var arrayLengthCounter = 0;
 
             foreach (var command in movementArray)
@@ -175,7 +183,7 @@ namespace mouseHover
                 {
                     numberOfStepsToMove += NumberOfStepsToMove(command);
                 }
-                if (firstLetterOfString == "R" || firstLetterOfString == "L")
+                else if (firstLetterOfString == "R" || firstLetterOfString == "L")
                 {
                     numberOfStepsToTurn += NumberOfStepsToTurn(command);
                     lastDirection = finalDirection;
@@ -183,23 +191,22 @@ namespace mouseHover
 
                     if (lastDirection == "E")
                     {
-                        startingPosition.X += numberOfStepsToMove;
+                        position.X += numberOfStepsToMove;
                         lastDirection = "E";
-
                     }
                     if (lastDirection == "N")
                     {
-                        startingPosition.Y += numberOfStepsToMove;
+                        position.Y += numberOfStepsToMove;
                         lastDirection = "N";
                     }
                     if (lastDirection == "S")
                     {
-                        startingPosition.Y -= numberOfStepsToMove;
+                        position.Y -= numberOfStepsToMove;
                         lastDirection = "S";
                     }
                     if (lastDirection == "W")
                     {
-                        startingPosition.X -= numberOfStepsToMove;
+                        position.X -= numberOfStepsToMove;
                         lastDirection = "W";
                     }
                     numberOfStepsToMove = 0;
@@ -209,24 +216,20 @@ namespace mouseHover
                 if (arrayLengthCounter == movementArray.Count)
                 {
                     if (finalDirection == "E")
-                        startingPosition.X += numberOfStepsToMove;
+                        position.X += numberOfStepsToMove;
                     if (finalDirection == "W")
-                        startingPosition.X -= numberOfStepsToMove;
+                        position.X -= numberOfStepsToMove;
                     else if (finalDirection == "N")
-                        startingPosition.Y += numberOfStepsToMove;
+                        position.Y += numberOfStepsToMove;
                     else if (finalDirection == "S")
-                        startingPosition.Y -= numberOfStepsToMove;
-                    else if (lastDirection == "" && startingDirection == "N")
-                        startingPosition.Y += numberOfStepsToMove;
+                        position.Y -= numberOfStepsToMove;
+                    else if (lastDirection == "" && position.Direction == "N")
+                        position.Y += numberOfStepsToMove;
                 }
 
             }
-
-
-
-
-
-            return $"{startingPosition.X},{startingPosition.Y} {finalDirection}";
+            position.Direction = finalDirection;
+            return position;
         }
 
         private static List<string> CreateMovementArray(string input)
@@ -285,13 +288,14 @@ namespace mouseHover
         {
             var x = int.Parse(input.Split(',')[0]);
             var y = int.Parse(input.Split(',', ' ')[1]);
-            return new Position(x, y);
+            var direction = input.Split(' ', ';')[1];
+            return new Position(x, y, direction);
         }
 
-        private static string StartingDirection(string input)
-        {
-            return input.Split(' ', ';')[1];
-        }
+        //private static string StartingDirection(string input)
+        //{
+        //    return input.Split(' ', ';')[1];
+        //}
 
 
     }
