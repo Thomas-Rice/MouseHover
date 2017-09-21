@@ -48,6 +48,7 @@ namespace mouseHover
         [TestCase("1,1 N; MMMRRMMM", ExpectedResult = "1,1 S")]
         [TestCase("1,1 N; MMMRRMMMR", ExpectedResult = "1,1 W")]
         [TestCase("1,1 N; MMMRRMMMRMMRM", ExpectedResult = "-1,2 N")]
+        [TestCase("1,1 N; MLM", ExpectedResult = "0,2 W")]
         public string MoveTurnMove(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
@@ -196,6 +197,8 @@ namespace mouseHover
                 {
                     if (finalDirection == "E")
                         startingPosition.X += numberOfStepsToMove;
+                    if (finalDirection == "W")
+                        startingPosition.X -= numberOfStepsToMove;
                     else if (finalDirection == "N")
                         startingPosition.Y += numberOfStepsToMove;
                     else if (finalDirection == "S")
