@@ -45,6 +45,9 @@ namespace mouseHover
         }
 
         [TestCase("1,1 N; MRM", ExpectedResult = "2,2 E")]
+        [TestCase("1,1 N; MMMRRMMM", ExpectedResult = "1,1 S")]
+        [TestCase("1,1 N; MMMRRMMMR", ExpectedResult = "1,1 W")]
+        [TestCase("1,1 N; MMMRRMMMRMMRM", ExpectedResult = "-1,2 N")]
         public string MoveTurnMove(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
@@ -107,6 +110,7 @@ namespace mouseHover
         {
             StepsToMove = CalculateIndexToUse(StepsToMove);
             var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
+            indexOfNewDirection = CalculateIndexToUse(indexOfNewDirection);
             return Directions[indexOfNewDirection];
         }
 
@@ -147,7 +151,7 @@ namespace mouseHover
             int numberOfStepsToMove = 0;
             int numberOfStepsToTurn = 0;
             var lastDirection = "";
-            var finalDirection = "N";
+            var finalDirection = startingDirection;
             var arrayLengthCounter = 0;
 
             foreach (var command in movementArray)
@@ -160,28 +164,42 @@ namespace mouseHover
                 if (firstLetterOfString == "R" || firstLetterOfString == "L")
                 {
                     numberOfStepsToTurn += NumberOfStepsToTurn(command);
-                    finalDirection = new Turn(startingDirection, numberOfStepsToTurn).CalculateDirectionToTurn();
+                    lastDirection = finalDirection;
+                    finalDirection = new Turn(finalDirection, numberOfStepsToTurn).CalculateDirectionToTurn();
 
-                    if (finalDirection == "E")
-                    {
-                        startingPosition.Y += numberOfStepsToMove;
-                        lastDirection = "R";
-
-                    }
-                    if (finalDirection == "N")
+                    if (lastDirection == "E")
                     {
                         startingPosition.X += numberOfStepsToMove;
-                        lastDirection = "L";
+                        lastDirection = "E";
+
+                    }
+                    if (lastDirection == "N")
+                    {
+                        startingPosition.Y += numberOfStepsToMove;
+                        lastDirection = "N";
+                    }
+                    if (lastDirection == "S")
+                    {
+                        startingPosition.Y -= numberOfStepsToMove;
+                        lastDirection = "S";
+                    }
+                    if (lastDirection == "W")
+                    {
+                        startingPosition.X -= numberOfStepsToMove;
+                        lastDirection = "W";
                     }
                     numberOfStepsToMove = 0;
                 }
-                arrayLengthCounter += 1; 
+                arrayLengthCounter += 1;
+                numberOfStepsToTurn = 0;
                 if (arrayLengthCounter == movementArray.Count)
                 {
-                    if (lastDirection == "R")
+                    if (finalDirection == "E")
                         startingPosition.X += numberOfStepsToMove;
-                    else if (lastDirection == "L")
+                    else if (finalDirection == "N")
                         startingPosition.Y += numberOfStepsToMove;
+                    else if (finalDirection == "S")
+                        startingPosition.Y -= numberOfStepsToMove;
                     else if (lastDirection == "" && startingDirection == "N")
                         startingPosition.Y += numberOfStepsToMove;
                 }
