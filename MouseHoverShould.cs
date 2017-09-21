@@ -44,6 +44,7 @@ namespace mouseHover
             return MovementCalculator.Move(currentDirection);
         }
 
+        [TestCase("1,1 N; MRM", ExpectedResult = "2,2 E")]
         public string MoveTurnMove(string currentDirection)
         {
             return MovementCalculator.Move(currentDirection);
@@ -139,34 +140,110 @@ namespace mouseHover
         public static string Move(string input)
         {
             var startingPosition = StartingPosition(input);
-            var numberOfStepsToMove = NumberOfStepsToMove(input);
-            var numberOfStepsToTurn = NumberOfStepsToTurn(input);
+            var movementArray = CreateMovementArray(input);
             var startingDirection = StartingDirection(input);
 
-            startingPosition.Y += numberOfStepsToMove;
-            //steps to move and directions to turn need to be separate
-            var finalDirection = new Turn(startingDirection, numberOfStepsToTurn).CalculateDirectionToTurn();
+
+            int numberOfStepsToMove = 0;
+            int numberOfStepsToTurn = 0;
+            var lastDirection = "";
+            var finalDirection = "N";
+            var arrayLengthCounter = 0;
+
+            foreach (var command in movementArray)
+            {
+                var firstLetterOfString = command[0].ToString();
+                if (firstLetterOfString == "M")
+                {
+                    numberOfStepsToMove += NumberOfStepsToMove(command);
+                }
+                if (firstLetterOfString == "R" || firstLetterOfString == "L")
+                {
+                    numberOfStepsToTurn += NumberOfStepsToTurn(command);
+                    finalDirection = new Turn(startingDirection, numberOfStepsToTurn).CalculateDirectionToTurn();
+
+                    if (finalDirection == "E")
+                    {
+                        startingPosition.Y += numberOfStepsToMove;
+                        lastDirection = "R";
+
+                    }
+                    if (finalDirection == "N")
+                    {
+                        startingPosition.X += numberOfStepsToMove;
+                        lastDirection = "L";
+                    }
+                    numberOfStepsToMove = 0;
+                }
+                arrayLengthCounter += 1; 
+                if (arrayLengthCounter == movementArray.Count)
+                {
+                    if (lastDirection == "R")
+                        startingPosition.X += numberOfStepsToMove;
+                    else if (lastDirection == "L")
+                        startingPosition.Y += numberOfStepsToMove;
+                    else if (lastDirection == "" && startingDirection == "N")
+                        startingPosition.Y += numberOfStepsToMove;
+                }
+
+            }
+
+
+
+
 
             return $"{startingPosition.X},{startingPosition.Y} {finalDirection}";
         }
 
+        private static List<string> CreateMovementArray(string input)
+        {
+            var movementArray = new List<string>();
+            var movementString = GetMovementString(input);
+            var tempString = "";
+            var previousLetter = "";
+
+            for(var i=0; i<movementString.Length; i++)
+            {
+                if (previousLetter != movementString[i].ToString() && i != 0)
+                { 
+                    movementArray.Add(tempString);
+                    tempString = "";
+                }
+
+                if (movementString[i].ToString() == "M")
+                    tempString += movementString[i];
+                if (movementString[i].ToString() == "R")
+                    tempString += movementString[i];
+                if (movementString[i].ToString() == "L")
+                    tempString += movementString[i];
+                previousLetter = movementString[i].ToString();
+
+            }
+            movementArray.Add(tempString);
+            return movementArray;
+
+        }
+
+        private static string GetMovementString(string input)
+        {
+            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
+            return input.Substring(indexOfFirstMovementCommand);
+        }
 
         private static int NumberOfStepsToMove(string input)
         {
             var numberOfStepsToMove = 0;
-            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
-            if (input[indexOfFirstMovementCommand] == 'M')
-                numberOfStepsToMove = (input.Substring(indexOfFirstMovementCommand)).Length;
+            if (input[0] == 'M')
+                numberOfStepsToMove = (input.Substring(0)).Length;
             return numberOfStepsToMove;
         }
         private static int NumberOfStepsToTurn(string input)
         {
             var numberOfStepsToTurn = 0;
-            var indexOfFirstMovementCommand = input.IndexOf(';') + 2;
-            if (input[indexOfFirstMovementCommand] == 'R')
-                numberOfStepsToTurn = (input.Substring(indexOfFirstMovementCommand)).Length;
-            if (input[indexOfFirstMovementCommand] == 'L')
-                numberOfStepsToTurn = ((input.Substring(indexOfFirstMovementCommand)).Length) * -1;
+            if (input[0] == 'R')
+                numberOfStepsToTurn = (input.Substring(0)).Length;
+            if (input[0] == 'L')
+                numberOfStepsToTurn = ((input.Substring(0)).Length) * -1;
             return numberOfStepsToTurn;
         }
 
