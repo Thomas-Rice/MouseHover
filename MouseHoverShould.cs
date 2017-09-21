@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using NUnit.Framework;
 
 
@@ -96,21 +97,27 @@ namespace mouseHover
         public string FinalDirection { get; set; } = "N";
         public int StepsToMove { get; set; }
 
-        private static readonly List<string> Directions = new List<string>()
-        {
-            "N",
-            "E",
-            "S",
-            "W"
-        };
+        
 
-        private static readonly List<string> ReversedDirections = new List<string>()
+        internal class Directions
         {
-            "W",
-            "S",
-            "E",
-            "N"
-        };
+            public static List<string> DirectionsList { get; } = new List<string>()
+            {
+                "N",
+                "E",
+                "S",
+                "W"
+            };
+
+            public static List<string> ReversedDirectionsList { get; } = new List<string>()
+            {
+                "W",
+                "S",
+                "E",
+                "N"
+            };
+                
+        }
 
         public Turn(string originalDirection, int stepsToMove)
         {
@@ -126,17 +133,17 @@ namespace mouseHover
         private string CalculateClockwiseDirection()
         {
             StepsToMove = CalculateIndexToUse(StepsToMove);
-            var indexOfNewDirection = Directions.IndexOf(OriginalDirection) + StepsToMove;
+            var indexOfNewDirection = Directions.DirectionsList.IndexOf(OriginalDirection) + StepsToMove;
             indexOfNewDirection = CalculateIndexToUse(indexOfNewDirection);
-            return Directions[indexOfNewDirection];
+            return Directions.DirectionsList[indexOfNewDirection];
         }
 
         private string CalculateAntiClockwiseDirection()
         {
             StepsToMove = CalculateStepsToMoveForAntiClockwise();
-            var indexOfNewDirection = ReversedDirections.IndexOf(OriginalDirection) + StepsToMove;
+            var indexOfNewDirection = Directions.ReversedDirectionsList.IndexOf(OriginalDirection) + StepsToMove;
             indexOfNewDirection = CalculateIndexToUse(indexOfNewDirection);
-            return ReversedDirections[indexOfNewDirection];
+            return Directions.ReversedDirectionsList[indexOfNewDirection];
         }
 
         private int CalculateStepsToMoveForAntiClockwise()
@@ -176,21 +183,8 @@ namespace mouseHover
             for (var i = 0; i < movementString.Length; i++)
             {
                 tempString = AddStringToArray(this.OutputMovementArray, movementString, tempString, previousLetter, i);
-
-                switch (movementString[i].ToString())
-                {
-                    case "M":
-                        tempString += movementString[i];
-                        break;
-                    case "R":
-                        tempString += movementString[i];
-                        break;
-                    case "L":
-                        tempString += movementString[i];
-                        break;
-                }
+                tempString += movementString[i];
                 previousLetter = movementString[i].ToString();
-
             }
             this.OutputMovementArray.Add(tempString);
         }
@@ -214,8 +208,6 @@ namespace mouseHover
 
 
     }
-
-
 
     public static class MovementCalculator
     {
@@ -294,12 +286,6 @@ namespace mouseHover
                     break;
             }
         }
-
-
-
-
-
-
 
         private static int NumberOfStepsToMove(string input)
         {
